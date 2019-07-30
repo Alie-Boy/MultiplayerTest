@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "MovingPlatform.h"
 
@@ -28,7 +26,7 @@ void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
+	if (HasAuthority() && (ActiveTriggers > 0))
 	{		
 		FVector CurrentLocation = GetActorLocation();
 
@@ -45,5 +43,18 @@ void AMovingPlatform::Tick(float DeltaTime)
 		FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
 		CurrentLocation += Direction * Speed * DeltaTime;
 		SetActorLocation(CurrentLocation);
+	}
+}
+
+void AMovingPlatform::AddActiveTrigger()
+{
+	ActiveTriggers++;
+}
+
+void AMovingPlatform::RemoveActiveTrigger()
+{
+	if (ActiveTriggers > 0)
+	{
+		ActiveTriggers--;
 	}
 }
