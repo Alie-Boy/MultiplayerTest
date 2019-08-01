@@ -2,16 +2,23 @@
 
 #include "Engine\Engine.h"
 #include "Classes\GameFramework\PlayerController.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Blueprint\UserWidget.h"
+
+#include "PlatformTrigger.h"
 
 UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer & ObjectInitializer)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Game Instance constructor called."));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MenuClassBP(TEXT("/Game/UI/MenuSystem/WBP_MainMenu"));
+	if (!ensure(MenuClassBP.Class != nullptr)) return;
+	/*UE_LOG(LogTemp, Warning, TEXT("Class found: %s"), *MenuClassBP.Class->GetName());*/
+	MenuClass = MenuClassBP.Class;
 }
 
 void UMultiplayerGameInstance::Init()
 {
 	Super::Init();
-	UE_LOG(LogTemp, Warning, TEXT("Game Instance Init called."));
+	UE_LOG(LogTemp, Warning, TEXT("MenuWidget class : %s"), *MenuClass->GetName());
 }
 
 void UMultiplayerGameInstance::Host()

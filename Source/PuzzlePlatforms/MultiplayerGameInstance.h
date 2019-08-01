@@ -6,9 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "MultiplayerGameInstance.generated.h"
 
-/**
- * 
- */
+class UUserWidget;
+
 UCLASS()
 class PUZZLEPLATFORMS_API UMultiplayerGameInstance : public UGameInstance
 {
@@ -25,4 +24,8 @@ public:
 	
 	UFUNCTION(Exec)
 	void Join(FString address);
+
+private:
+
+	TSubclassOf<UUserWidget> MenuClass;
 };
