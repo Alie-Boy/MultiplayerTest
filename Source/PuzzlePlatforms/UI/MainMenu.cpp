@@ -4,6 +4,7 @@
 
 #include "Components\Button.h"
 
+
 bool UMainMenu::Initialize()
 {
 	bool Success = Super::Initialize();
@@ -16,6 +17,32 @@ bool UMainMenu::Initialize()
 	Join->OnClicked.AddDynamic(this, &UMainMenu::JoinButtonClick);
 
 	return true;
+}
+
+void UMainMenu::Setup()
+{
+	AddToViewport();
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(TakeWidget());
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+}
+
+
+void UMainMenu::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
+{
+	RemoveFromViewport();
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	FInputModeGameOnly InputMode;
+	InputMode.SetConsumeCaptureMouseDown(false);
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = false;
 }
 
 void UMainMenu::SetMenuInterface(IMenuInterface* MenuInterface)
