@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint\UserWidget.h"
 
+#include "UI\MainMenu.h"
 #include "PlatformTrigger.h"
 
 UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -21,10 +22,20 @@ void UMultiplayerGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("MenuWidget class : %s"), *MenuClass->GetName());
 }
 
+void UMultiplayerGameInstance::Host()
+{
+	HostServer();
+}
+
+void UMultiplayerGameInstance::Join(FString address)
+{
+	JoinServer(address);
+}
+
 void UMultiplayerGameInstance::LoadMenu()
 {
 	if (!ensure(MenuClass != nullptr)) return;
-	UUserWidget* Menu = CreateWidget<UUserWidget>(this, MenuClass);
+	UMainMenu* Menu = CreateWidget<UMainMenu>(this, MenuClass);
 	Menu->AddToViewport();
 
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
@@ -34,9 +45,11 @@ void UMultiplayerGameInstance::LoadMenu()
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->bShowMouseCursor = true;
+
+	Menu->SetMenuInterface(this);
 }
 
-void UMultiplayerGameInstance::Host()
+void UMultiplayerGameInstance::HostServer()
 {
 	UEngine * Engine = GetEngine();
 	Engine->AddOnScreenDebugMessage(0, 1.5f, FColor::Green, TEXT("Hosting"));
@@ -47,7 +60,7 @@ void UMultiplayerGameInstance::Host()
 	world->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
-void UMultiplayerGameInstance::Join(FString address)
+void UMultiplayerGameInstance::JoinServer(FString address)
 {
 	UEngine * Engine = GetEngine();
 	FString string = "Joining " + address;
