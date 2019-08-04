@@ -6,14 +6,18 @@
 #include "Blueprint\UserWidget.h"
 
 #include "UI\MainMenu.h"
+#include "UI\PauseMenu.h"
 #include "PlatformTrigger.h"
 
 UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer & ObjectInitializer)
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> MenuClassBP(TEXT("/Game/UI/MenuSystem/WBP_MainMenu"));
 	if (!ensure(MenuClassBP.Class != nullptr)) return;
+	static ConstructorHelpers::FClassFinder<UUserWidget> PauseMenuClassBP(TEXT("/Game/UI/MenuSystem/WBP_PauseMenu"));
+	if (!ensure(PauseMenuClassBP.Class != nullptr)) return;
 	/*UE_LOG(LogTemp, Warning, TEXT("Class found: %s"), *MenuClassBP.Class->GetName());*/
 	MenuClass = MenuClassBP.Class;
+	PauseMenuClass = PauseMenuClassBP.Class;
 }
 
 void UMultiplayerGameInstance::Init()
@@ -39,6 +43,13 @@ void UMultiplayerGameInstance::LoadMenu()
 	Menu->Setup();
 
 	Menu->SetMenuInterface(this);
+}
+
+void UMultiplayerGameInstance::LoadPauseMenu()
+{
+	if (!ensure(PauseMenuClass != nullptr)) return;
+	UPauseMenu* PauseMenu = CreateWidget<UPauseMenu>(this, PauseMenuClass);
+	PauseMenu->ShowPauseMenu();
 }
 
 void UMultiplayerGameInstance::HostServer()

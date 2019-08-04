@@ -46,7 +46,6 @@ void UMainMenu::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 
 	FInputModeGameOnly InputMode;
-	InputMode.SetConsumeCaptureMouseDown(false);
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->bShowMouseCursor = false;
 }

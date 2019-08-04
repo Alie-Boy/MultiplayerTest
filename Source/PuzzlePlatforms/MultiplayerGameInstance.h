@@ -27,6 +27,9 @@ public:
 	UFUNCTION(Exec, BlueprintCallable)
 	void LoadMenu();
 
+	UFUNCTION(Exec, BlueprintCallable)
+	void LoadPauseMenu();
+
 	UFUNCTION(Exec)
 	void HostServer();
 	
@@ -36,4 +39,5 @@ public:
 private:
 
 	TSubclassOf<UUserWidget> MenuClass;
+	TSubclassOf<UUserWidget> PauseMenuClass;
 };
