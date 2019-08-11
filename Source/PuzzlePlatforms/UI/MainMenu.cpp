@@ -16,11 +16,13 @@ bool UMainMenu::Initialize()
 	if (!ensure(JoinMenuButton != nullptr)) return false;
 	if (!ensure(BackToMainButton != nullptr)) return false;
 	if (!ensure(JoinServerButton != nullptr)) return false;
+	if (!ensure(QuitToOSButton != nullptr)) return false;
 
 	HostServerButton->OnClicked.AddDynamic(this, &UMainMenu::HostServerButtonClick);
 	JoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::JoinMenuButtonClick);
 	BackToMainButton->OnClicked.AddDynamic(this, &UMainMenu::BackToMainButtonClick);
 	JoinServerButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServerButtonClick);
+	QuitToOSButton->OnClicked.AddDynamic(this, &UMainMenu::QuitToOSButtonClick);
 
 	return true;
 }
@@ -78,4 +80,12 @@ void UMainMenu::JoinServerButtonClick()
 	if (MenuInterface == nullptr) return;
 	FString address = IPAddressInput->GetText().ToString();
 	MenuInterface->Join(address);
+}
+
+void UMainMenu::QuitToOSButtonClick()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ConsoleCommand("Quit");
 }

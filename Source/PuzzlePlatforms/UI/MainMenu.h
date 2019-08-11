@@ -40,6 +40,9 @@ private:
 	UFUNCTION()
 	void JoinServerButtonClick();
 
+	UFUNCTION()
+	void QuitToOSButtonClick();
+
 	UPROPERTY(meta = (BindWidget))
 	UButton* HostServerButton;
 	
@@ -51,6 +54,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* JoinServerButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* QuitToOSButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
