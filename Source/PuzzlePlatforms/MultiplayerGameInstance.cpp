@@ -52,6 +52,13 @@ void UMultiplayerGameInstance::LoadPauseMenu()
 	PauseMenu->ShowPauseMenu();
 }
 
+void UMultiplayerGameInstance::HidePauseMenu()
+{
+	if (!ensure(PauseMenuClass != nullptr)) return;
+	UPauseMenu* PauseMenu = CreateWidget<UPauseMenu>(this, PauseMenuClass);
+	PauseMenu->HidePauseMenu();
+}
+
 void UMultiplayerGameInstance::HostServer()
 {
 	UEngine * Engine = GetEngine();

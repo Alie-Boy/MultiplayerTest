@@ -30,6 +30,9 @@ public:
 	UFUNCTION(Exec, BlueprintCallable)
 	void LoadPauseMenu();
 
+	UFUNCTION(Exec, BlueprintCallable)
+	void HidePauseMenu();
+
 	UFUNCTION(Exec)
 	void HostServer();
 	

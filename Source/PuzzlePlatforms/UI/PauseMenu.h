@@ -6,9 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "PauseMenu.generated.h"
 
-/**
- * 
- */
+class UButton;
+
 UCLASS()
 class PUZZLEPLATFORMS_API UPauseMenu : public UUserWidget
 {
@@ -30,4 +29,15 @@ protected:
 
 private:
 	
+	UFUNCTION()
+	void ResumeButtonClicked();
+	
+	UFUNCTION()
+	void QuitToMenuButtonClicked();
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ResumeButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* QuitToMenuButton;
 };
