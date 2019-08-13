@@ -4,6 +4,7 @@
 #include "Classes\GameFramework\PlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint\UserWidget.h"
+#include "OnlineSubsystem.h"
 
 #include "UI\MainMenu.h"
 #include "UI\PauseMenu.h"
@@ -23,7 +24,14 @@ UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer & Ob
 void UMultiplayerGameInstance::Init()
 {
 	Super::Init();
-	UE_LOG(LogTemp, Warning, TEXT("MenuWidget class : %s"), *MenuClass->GetName());
+	IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
+	if (OSS == nullptr) return;
+	UE_LOG(LogTemp, Warning, TEXT("OSS pointer : %s"), *OSS->GetSubsystemName().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("OSS service : %s"), *OSS->GetOnlineServiceName().ToString());
+	if (OSS->GetSessionInterface().IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found OSS session."));
+	}
 }
 
 void UMultiplayerGameInstance::Host()
