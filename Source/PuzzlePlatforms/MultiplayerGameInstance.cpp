@@ -5,6 +5,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint\UserWidget.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSessionInterface.h"
 
 #include "UI\MainMenu.h"
 #include "UI\PauseMenu.h"
@@ -16,7 +18,8 @@ UMultiplayerGameInstance::UMultiplayerGameInstance(const FObjectInitializer & Ob
 	if (!ensure(MenuClassBP.Class != nullptr)) return;
 	static ConstructorHelpers::FClassFinder<UUserWidget> PauseMenuClassBP(TEXT("/Game/UI/MenuSystem/WBP_PauseMenu"));
 	if (!ensure(PauseMenuClassBP.Class != nullptr)) return;
-	/*UE_LOG(LogTemp, Warning, TEXT("Class found: %s"), *MenuClassBP.Class->GetName());*/
+	UE_LOG(LogTemp, Warning, TEXT("Class found: %s"), *MenuClassBP.Class->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Class found: %s"), *PauseMenuClassBP.Class->GetName());
 	MenuClass = MenuClassBP.Class;
 	PauseMenuClass = PauseMenuClassBP.Class;
 }
@@ -27,10 +30,11 @@ void UMultiplayerGameInstance::Init()
 	IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
 	if (OSS == nullptr) return;
 	UE_LOG(LogTemp, Warning, TEXT("OSS pointer : %s"), *OSS->GetSubsystemName().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("OSS service : %s"), *OSS->GetOnlineServiceName().ToString());
-	if (OSS->GetSessionInterface().IsValid())
+	SessionInterface = OSS->GetSessionInterface();
+	if (SessionInterface.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found OSS session."));
+		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnCreateSessionComplete);
+		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnCreateSessionComplete);
 	}
 }
 
@@ -69,6 +73,27 @@ void UMultiplayerGameInstance::HidePauseMenu()
 
 void UMultiplayerGameInstance::HostServer()
 {
+	if (SessionInterface.IsValid())
+	{
+		FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(FName("My Session"));
+		if (ExistingSession) {
+			SessionInterface->DestroySession(FName("My Session"));
+		}
+		else { 
+			CreateSession(); 
+		}
+	}
+}
+
+void UMultiplayerGameInstance::CreateSession()
+{
+	FOnlineSessionSettings SessionSettings;
+	SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
+}
+
+void UMultiplayerGameInstance::OnCreateSessionComplete(FName SessionName, bool isCompleted)
+{
+	if (!isCompleted) return;
 	UEngine * Engine = GetEngine();
 	Engine->AddOnScreenDebugMessage(0, 1.5f, FColor::Green, TEXT("Hosting"));
 
@@ -76,6 +101,12 @@ void UMultiplayerGameInstance::HostServer()
 	if (!ensure(world != nullptr)) return;
 
 	world->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+}
+
+void UMultiplayerGameInstance::OnDestroySessionComplete(FName SessionName, bool isCompleted)
+{
+	if (!isCompleted) return;
+	CreateSession();
 }
 
 void UMultiplayerGameInstance::JoinServer(FString address)
@@ -88,3 +119,4 @@ void UMultiplayerGameInstance::JoinServer(FString address)
 	if (!ensure(PlayerController != nullptr)) return;
 	PlayerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
 }
+

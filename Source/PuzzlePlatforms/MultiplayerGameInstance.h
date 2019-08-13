@@ -8,6 +8,7 @@
 #include "MultiplayerGameInstance.generated.h"
 
 class UUserWidget;
+typedef TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> IOnlineSessionPtr;
 
 UCLASS()
 class PUZZLEPLATFORMS_API UMultiplayerGameInstance : public UGameInstance, public IMenuInterface
@@ -35,12 +36,19 @@ public:
 
 	UFUNCTION(Exec)
 	void HostServer();
-	
+
 	UFUNCTION(Exec)
 	void JoinServer(FString address);
 
 private:
 
+	IOnlineSessionPtr SessionInterface;
+
 	TSubclassOf<UUserWidget> MenuClass;
 	TSubclassOf<UUserWidget> PauseMenuClass;
+
+	void OnCreateSessionComplete(FName SessionName, bool isCompleted);
+	void OnDestroySessionComplete(FName SessionName, bool isCompleted);
+	
+	void CreateSession();
 };
