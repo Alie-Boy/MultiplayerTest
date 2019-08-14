@@ -35,6 +35,17 @@ void UMultiplayerGameInstance::Init()
 	{
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnCreateSessionComplete);
 		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnCreateSessionComplete);
+		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnFindSessionsComplete);
+
+		OnlineSessionSearch = MakeShareable(new FOnlineSessionSearch());
+
+		if (OnlineSessionSearch.IsValid())
+		{
+			OnlineSessionSearch->bIsLanQuery = true;
+
+			UE_LOG(LogTemp, Warning, TEXT("Starting session search"));
+			SessionInterface->FindSessions(0, OnlineSessionSearch.ToSharedRef());
+		}
 	}
 }
 
@@ -88,6 +99,9 @@ void UMultiplayerGameInstance::HostServer()
 void UMultiplayerGameInstance::CreateSession()
 {
 	FOnlineSessionSettings SessionSettings;
+	SessionSettings.bIsLANMatch = true;
+	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.NumPublicConnections = 2;
 	SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
 }
 
@@ -107,6 +121,25 @@ void UMultiplayerGameInstance::OnDestroySessionComplete(FName SessionName, bool 
 {
 	if (!isCompleted) return;
 	CreateSession();
+}
+
+void UMultiplayerGameInstance::OnFindSessionsComplete(bool isCompleted)
+{
+	if (!isCompleted) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Finding sessions completed."));
+	auto SearchResults = OnlineSessionSearch->SearchResults;
+	if (SearchResults.Num() > 0)
+	{
+		for (auto &i : SearchResults)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Session: %s"), *i.GetSessionIdStr());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Sessions found."));
+	}
 }
 
 void UMultiplayerGameInstance::JoinServer(FString address)

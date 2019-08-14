@@ -8,6 +8,7 @@
 #include "MultiplayerGameInstance.generated.h"
 
 class UUserWidget;
+class FOnlineSessionSearch;
 typedef TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> IOnlineSessionPtr;
 
 UCLASS()
@@ -43,12 +44,14 @@ public:
 private:
 
 	IOnlineSessionPtr SessionInterface;
+	TSharedPtr<FOnlineSessionSearch> OnlineSessionSearch;
 
 	TSubclassOf<UUserWidget> MenuClass;
 	TSubclassOf<UUserWidget> PauseMenuClass;
 
 	void OnCreateSessionComplete(FName SessionName, bool isCompleted);
 	void OnDestroySessionComplete(FName SessionName, bool isCompleted);
+	void OnFindSessionsComplete(bool isCompleted);
 	
 	void CreateSession();
 };
