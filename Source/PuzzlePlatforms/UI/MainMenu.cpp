@@ -2,10 +2,20 @@
 #include "MainMenu.h"
 #include "MenuInterface.h"
 
+#include "SessionListSingleRow.h"
+
 #include "Components\Button.h"
+#include "Components\ScrollBox.h"
 #include "Components\WidgetSwitcher.h"
 #include "Components\EditableText.h"
+#include "UObject\ConstructorHelpers.h"
 
+UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> ServerRow(TEXT("/Game/UI/MenuSystem/WBP_SessionListSingleRow"));
+	if (!ensure(ServerRow.Class != nullptr)) return;
+	ServerRowClass = ServerRow.Class;
+}
 
 bool UMainMenu::Initialize()
 {
@@ -78,8 +88,10 @@ void UMainMenu::BackToMainButtonClick()
 void UMainMenu::JoinServerButtonClick()
 {
 	if (MenuInterface == nullptr) return;
-	FString address = IPAddressInput->GetText().ToString();
-	MenuInterface->Join(address);
+	//FString address = IPAddressInput->GetText().ToString();
+	//MenuInterface->Join(address);
+	USessionListSingleRow* item = CreateWidget<USessionListSingleRow>(this, ServerRowClass);
+	IPAddressScrollBox->AddChild(item);
 }
 
 void UMainMenu::QuitToOSButtonClick()
