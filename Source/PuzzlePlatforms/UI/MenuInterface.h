@@ -26,4 +26,6 @@ public:
 	virtual void Host() = 0;
 
 	virtual void Join(FString address) = 0;
+
+	virtual void QuitToMenu() = 0;
 };

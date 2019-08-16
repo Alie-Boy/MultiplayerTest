@@ -22,18 +22,19 @@ public:
 
 	virtual void Init() override;
 
+	// IMenuInterface overrides start
 	virtual void Host() override;
 
 	virtual void Join(FString address) override;
+
+	virtual void QuitToMenu() override;
+	// IMenuInterface overrides end
 
 	UFUNCTION(Exec, BlueprintCallable)
 	void LoadMenu();
 
 	UFUNCTION(Exec, BlueprintCallable)
 	void LoadPauseMenu();
-
-	UFUNCTION(Exec, BlueprintCallable)
-	void HidePauseMenu();
 
 	UFUNCTION(Exec)
 	void HostServer();

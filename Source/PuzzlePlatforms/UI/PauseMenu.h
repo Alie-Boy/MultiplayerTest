@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "MenuWidget.h"
 #include "PauseMenu.generated.h"
 
 class UButton;
 
 UCLASS()
-class PUZZLEPLATFORMS_API UPauseMenu : public UUserWidget
+class PUZZLEPLATFORMS_API UPauseMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
@@ -24,8 +24,6 @@ public:
 protected:
 
 	virtual bool Initialize() override;
-
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
 private:
 	

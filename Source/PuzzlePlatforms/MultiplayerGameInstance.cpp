@@ -2,7 +2,7 @@
 
 #include "Engine\Engine.h"
 #include "Classes\GameFramework\PlayerController.h"
-#include "UObject/ConstructorHelpers.h"
+#include "UObject\ConstructorHelpers.h"
 #include "Blueprint\UserWidget.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
@@ -59,27 +59,30 @@ void UMultiplayerGameInstance::Join(FString address)
 	JoinServer(address);
 }
 
+void UMultiplayerGameInstance::QuitToMenu()
+{
+	UWorld* world = GetWorld();
+	if (!ensure(world != nullptr)) return;
+
+	world->ServerTravel("/Game/Maps/MainMenu");
+}
+
 void UMultiplayerGameInstance::LoadMenu()
 {
 	if (!ensure(MenuClass != nullptr)) return;
-	UMainMenu* Menu = CreateWidget<UMainMenu>(this, MenuClass);
-	Menu->Setup();
+	UMainMenu* MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
+	MainMenu->Setup();
 
-	Menu->SetMenuInterface(this);
+	MainMenu->SetMenuInterface(this);
 }
 
 void UMultiplayerGameInstance::LoadPauseMenu()
 {
 	if (!ensure(PauseMenuClass != nullptr)) return;
 	UPauseMenu* PauseMenu = CreateWidget<UPauseMenu>(this, PauseMenuClass);
-	PauseMenu->ShowPauseMenu();
-}
+	PauseMenu->Setup();
 
-void UMultiplayerGameInstance::HidePauseMenu()
-{
-	if (!ensure(PauseMenuClass != nullptr)) return;
-	UPauseMenu* PauseMenu = CreateWidget<UPauseMenu>(this, PauseMenuClass);
-	PauseMenu->HidePauseMenu();
+	PauseMenu->SetMenuInterface(this);
 }
 
 void UMultiplayerGameInstance::HostServer()

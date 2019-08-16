@@ -1,6 +1,6 @@
 
 #include "PauseMenu.h"
-
+#include "MenuInterface.h"
 #include "Components\Button.h"
 
 bool UPauseMenu::Initialize()
@@ -40,11 +40,8 @@ void UPauseMenu::HidePauseMenu()
 	FInputModeGameOnly InputMode;
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->bShowMouseCursor = false;
-}
-
-void UPauseMenu::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
-{
-	HidePauseMenu();
+	
+	MarkPendingKill();
 }
 
 void UPauseMenu::ResumeButtonClicked()
@@ -54,9 +51,5 @@ void UPauseMenu::ResumeButtonClicked()
 
 void UPauseMenu::QuitToMenuButtonClicked()
 {
-	UWorld* world = GetWorld();
-	if (!ensure(world != nullptr)) return;
-
-	//TODO: Remove project dependancy by using an Interface.
-	world->ServerTravel("/Game/Maps/MainMenu");
+	MenuInterface->QuitToMenu();
 }

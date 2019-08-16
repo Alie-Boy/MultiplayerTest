@@ -1,13 +1,13 @@
 
 #include "MainMenu.h"
 #include "MenuInterface.h"
-
 #include "SessionListSingleRow.h"
 
 #include "Components\Button.h"
 #include "Components\ScrollBox.h"
 #include "Components\WidgetSwitcher.h"
 #include "Components\EditableText.h"
+#include "Components\TextBlock.h"
 #include "UObject\ConstructorHelpers.h"
 
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -37,36 +37,6 @@ bool UMainMenu::Initialize()
 	return true;
 }
 
-void UMainMenu::Setup()
-{
-	AddToViewport();
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!ensure(PlayerController != nullptr)) return;
-
-	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(TakeWidget());
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	PlayerController->SetInputMode(InputMode);
-	PlayerController->bShowMouseCursor = true;
-}
-
-void UMainMenu::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
-{
-	RemoveFromViewport();
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-
-	FInputModeGameOnly InputMode;
-	PlayerController->SetInputMode(InputMode);
-	PlayerController->bShowMouseCursor = false;
-}
-
-void UMainMenu::SetMenuInterface(IMenuInterface* MenuInterface)
-{
-	this->MenuInterface = MenuInterface;
-}
-
 void UMainMenu::HostServerButtonClick()
 {
 	if (MenuInterface == nullptr) return;
@@ -91,6 +61,7 @@ void UMainMenu::JoinServerButtonClick()
 	//FString address = IPAddressInput->GetText().ToString();
 	//MenuInterface->Join(address);
 	USessionListSingleRow* item = CreateWidget<USessionListSingleRow>(this, ServerRowClass);
+	item->ServerName->SetText(FText::FromString("Test text"));
 	IPAddressScrollBox->AddChild(item);
 }
 

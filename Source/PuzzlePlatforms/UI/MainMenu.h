@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "MenuWidget.h"
 #include "MainMenu.generated.h"
 
 class UButton;
@@ -12,7 +12,7 @@ class UScrollBox;
 class USessionListSingleRow;
 
 UCLASS()
-class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
+class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 	
@@ -20,15 +20,9 @@ public:
 
 	UMainMenu(const FObjectInitializer& ObjectInitializer);
 
-	void SetMenuInterface(IMenuInterface* MenuInterface);
-
-	void Setup();
-
 protected:
 
 	virtual bool Initialize() override;
-
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
 private:
 
@@ -76,8 +70,6 @@ private:
 
 	//UPROPERTY(meta = (BindWidget))
 	//UEditableText* IPAddressInput;
-
-	IMenuInterface* MenuInterface;
 
 	TSubclassOf<USessionListSingleRow> ServerRowClass;
 
