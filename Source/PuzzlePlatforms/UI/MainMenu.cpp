@@ -43,10 +43,24 @@ void UMainMenu::HostServerButtonClick()
 	MenuInterface->Host();
 }
 
+void UMainMenu::SetServerList(TArray<FString> ServerNames)
+{
+	IPAddressScrollBox->ClearChildren();
+	for (const FString& serverName: ServerNames)
+	{
+		USessionListSingleRow* item = CreateWidget<USessionListSingleRow>(this, ServerRowClass);
+		if (!ensure(item != nullptr)) return;
+		item->ServerName->SetText(FText::FromString(serverName));
+		IPAddressScrollBox->AddChild(item);
+	}
+}
+
 void UMainMenu::JoinMenuButtonClick()
 {
 	if (MenuSwitcher == nullptr) return;
 	MenuSwitcher->SetActiveWidget(JoinMenu);
+	if (MenuInterface == nullptr) return;
+	MenuInterface->RefreshServerList();
 }
 
 void UMainMenu::BackToMainButtonClick()
@@ -59,10 +73,7 @@ void UMainMenu::JoinServerButtonClick()
 {
 	if (MenuInterface == nullptr) return;
 	//FString address = IPAddressInput->GetText().ToString();
-	//MenuInterface->Join(address);
-	USessionListSingleRow* item = CreateWidget<USessionListSingleRow>(this, ServerRowClass);
-	item->ServerName->SetText(FText::FromString("Test text"));
-	IPAddressScrollBox->AddChild(item);
+	MenuInterface->Join("");
 }
 
 void UMainMenu::QuitToOSButtonClick()

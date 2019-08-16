@@ -38,14 +38,6 @@ void UMultiplayerGameInstance::Init()
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnFindSessionsComplete);
 
 		OnlineSessionSearch = MakeShareable(new FOnlineSessionSearch());
-
-		if (OnlineSessionSearch.IsValid())
-		{
-			OnlineSessionSearch->bIsLanQuery = true;
-
-			UE_LOG(LogTemp, Warning, TEXT("Starting session search"));
-			SessionInterface->FindSessions(0, OnlineSessionSearch.ToSharedRef());
-		}
 	}
 }
 
@@ -67,10 +59,15 @@ void UMultiplayerGameInstance::QuitToMenu()
 	world->ServerTravel("/Game/Maps/MainMenu");
 }
 
+void UMultiplayerGameInstance::RefreshServerList()
+{
+	FindSessions();
+}
+
 void UMultiplayerGameInstance::LoadMenu()
 {
 	if (!ensure(MenuClass != nullptr)) return;
-	UMainMenu* MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
+	MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
 	MainMenu->Setup();
 
 	MainMenu->SetMenuInterface(this);
@@ -108,6 +105,17 @@ void UMultiplayerGameInstance::CreateSession()
 	SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
 }
 
+void UMultiplayerGameInstance::FindSessions()
+{
+	if (OnlineSessionSearch.IsValid())
+	{
+		OnlineSessionSearch->bIsLanQuery = true;
+
+		UE_LOG(LogTemp, Warning, TEXT("Starting session search"));
+		SessionInterface->FindSessions(0, OnlineSessionSearch.ToSharedRef());
+	}
+}
+
 void UMultiplayerGameInstance::OnCreateSessionComplete(FName SessionName, bool isCompleted)
 {
 	if (!isCompleted) return;
@@ -130,12 +138,15 @@ void UMultiplayerGameInstance::OnFindSessionsComplete(bool isCompleted)
 {
 	if (!isCompleted) return;
 
+	TArray<FString> ServerNames;
+	ServerNames.Empty();
 	UE_LOG(LogTemp, Warning, TEXT("Finding sessions completed."));
 	auto SearchResults = OnlineSessionSearch->SearchResults;
 	if (SearchResults.Num() > 0)
 	{
 		for (auto &i : SearchResults)
 		{
+			ServerNames.Emplace(i.GetSessionIdStr());
 			UE_LOG(LogTemp, Warning, TEXT("Session: %s"), *i.GetSessionIdStr());
 		}
 	}
@@ -143,6 +154,7 @@ void UMultiplayerGameInstance::OnFindSessionsComplete(bool isCompleted)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Sessions found."));
 	}
+	MainMenu->SetServerList(ServerNames);
 }
 
 void UMultiplayerGameInstance::JoinServer(FString address)

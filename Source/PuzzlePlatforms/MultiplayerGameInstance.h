@@ -7,6 +7,7 @@
 #include "UI\MenuInterface.h"
 #include "MultiplayerGameInstance.generated.h"
 
+class UMainMenu;
 class UUserWidget;
 class FOnlineSessionSearch;
 typedef TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> IOnlineSessionPtr;
@@ -28,6 +29,8 @@ public:
 	virtual void Join(FString address) override;
 
 	virtual void QuitToMenu() override;
+
+	virtual void RefreshServerList() override;
 	// IMenuInterface overrides end
 
 	UFUNCTION(Exec, BlueprintCallable)
@@ -50,9 +53,13 @@ private:
 	TSubclassOf<UUserWidget> MenuClass;
 	TSubclassOf<UUserWidget> PauseMenuClass;
 
+	UMainMenu* MainMenu;
+
 	void OnCreateSessionComplete(FName SessionName, bool isCompleted);
 	void OnDestroySessionComplete(FName SessionName, bool isCompleted);
 	void OnFindSessionsComplete(bool isCompleted);
 	
 	void CreateSession();
+
+	void FindSessions();
 };

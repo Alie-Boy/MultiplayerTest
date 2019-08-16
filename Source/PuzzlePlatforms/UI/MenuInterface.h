@@ -28,4 +28,6 @@ public:
 	virtual void Join(FString address) = 0;
 
 	virtual void QuitToMenu() = 0;
+
+	virtual void RefreshServerList() = 0;
 };
