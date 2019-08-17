@@ -46,13 +46,23 @@ void UMainMenu::HostServerButtonClick()
 void UMainMenu::SetServerList(TArray<FString> ServerNames)
 {
 	IPAddressScrollBox->ClearChildren();
+
+	uint32 index = 0;
 	for (const FString& serverName: ServerNames)
 	{
 		USessionListSingleRow* item = CreateWidget<USessionListSingleRow>(this, ServerRowClass);
 		if (!ensure(item != nullptr)) return;
 		item->ServerName->SetText(FText::FromString(serverName));
+		item->Setup(this, index);
+		++index;
+
 		IPAddressScrollBox->AddChild(item);
 	}
+}
+
+void UMainMenu::SelectIndex(uint32 Index)
+{
+	SelectedIndex = Index;
 }
 
 void UMainMenu::JoinMenuButtonClick()
@@ -71,6 +81,15 @@ void UMainMenu::BackToMainButtonClick()
 
 void UMainMenu::JoinServerButtonClick()
 {
+	if (SelectedIndex.IsSet())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Selected index = %d"), SelectedIndex.GetValue());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Selected index not set."));
+	}
+
 	if (MenuInterface == nullptr) return;
 	//FString address = IPAddressInput->GetText().ToString();
 	MenuInterface->Join("");
