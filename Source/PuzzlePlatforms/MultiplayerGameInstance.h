@@ -11,6 +11,7 @@ class UMainMenu;
 class UUserWidget;
 class FOnlineSessionSearch;
 typedef TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> IOnlineSessionPtr;
+namespace EOnJoinSessionCompleteResult { enum Type; };
 
 UCLASS()
 class PUZZLEPLATFORMS_API UMultiplayerGameInstance : public UGameInstance, public IMenuInterface
@@ -26,7 +27,7 @@ public:
 	// IMenuInterface overrides start
 	virtual void Host() override;
 
-	virtual void Join(FString address) override;
+	virtual void Join(uint32 Index) override;
 
 	virtual void QuitToMenu() override;
 
@@ -43,7 +44,7 @@ public:
 	void HostServer();
 
 	UFUNCTION(Exec)
-	void JoinServer(FString address);
+	void JoinServer(uint32 Index);
 
 private:
 
@@ -58,6 +59,7 @@ private:
 	void OnCreateSessionComplete(FName SessionName, bool isCompleted);
 	void OnDestroySessionComplete(FName SessionName, bool isCompleted);
 	void OnFindSessionsComplete(bool isCompleted);
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	
 	void CreateSession();
 

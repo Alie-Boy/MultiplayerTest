@@ -36,6 +36,7 @@ void UMultiplayerGameInstance::Init()
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnCreateSessionComplete);
 		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnCreateSessionComplete);
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnFindSessionsComplete);
+		SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnJoinSessionComplete);
 
 		OnlineSessionSearch = MakeShareable(new FOnlineSessionSearch());
 	}
@@ -46,9 +47,9 @@ void UMultiplayerGameInstance::Host()
 	HostServer();
 }
 
-void UMultiplayerGameInstance::Join(FString address)
+void UMultiplayerGameInstance::Join(uint32 Index)
 {
-	JoinServer(address);
+	JoinServer(Index);
 }
 
 void UMultiplayerGameInstance::QuitToMenu()
@@ -157,14 +158,23 @@ void UMultiplayerGameInstance::OnFindSessionsComplete(bool isCompleted)
 	MainMenu->SetServerList(ServerNames);
 }
 
-void UMultiplayerGameInstance::JoinServer(FString address)
+void UMultiplayerGameInstance::JoinServer(uint32 Index)
+{
+	if (!SessionInterface.IsValid())  return;
+	if (!OnlineSessionSearch.IsValid()) return;
+
+	SessionInterface->JoinSession(0, FName("My Session"), OnlineSessionSearch->SearchResults[Index]);
+	
+}
+
+void UMultiplayerGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
 	UEngine * Engine = GetEngine();
+	FString address;
+	SessionInterface->GetResolvedConnectString(SessionName, address);
 	FString string = "Joining " + address;
 	Engine->AddOnScreenDebugMessage(0, 1.5f, FColor::Green, string);
-
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!ensure(PlayerController != nullptr)) return;
 	PlayerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
 }
-

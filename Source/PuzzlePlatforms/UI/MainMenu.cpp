@@ -81,18 +81,15 @@ void UMainMenu::BackToMainButtonClick()
 
 void UMainMenu::JoinServerButtonClick()
 {
-	if (SelectedIndex.IsSet())
+	if (SelectedIndex.IsSet() && MenuInterface != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Selected index = %d"), SelectedIndex.GetValue());
+		MenuInterface->Join(SelectedIndex.GetValue());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Selected index not set."));
 	}
-
-	if (MenuInterface == nullptr) return;
-	//FString address = IPAddressInput->GetText().ToString();
-	MenuInterface->Join("");
 }
 
 void UMainMenu::QuitToOSButtonClick()
